@@ -1,0 +1,36 @@
+{
+  "name": "youtube-skills",
+  "version": "1.0.0",
+  "description": "12 drop-in agent skills for YouTube transcripts, captions, subtitles, video and channel search, playlists and channel browsing, powered by the TranscriptOut service.",
+  "author": {
+    "name": "TranscriptOut",
+    "email": "support@transcriptout.com",
+    "url": "https://transcriptout.com"
+  },
+  "homepage": "https://transcriptout.com",
+  "repository": "https://github.com/artemchuikin/youtube-skills",
+  "license": "MIT",
+  "keywords": [
+    "youtube",
+    "transcript",
+    "captions",
+    "subtitles",
+    "video-search",
+    "channel-search",
+    "playlists",
+    "transcriptout",
+    "agent-skills"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "YouTube Skills by TranscriptOut",
+    "shortDescription": "YouTube transcripts, captions, search and channel data as agent skills.",
+    "longDescription": "A set of 12 agent skills that give any skills-compatible agent reliable access to YouTube video transcripts, timestamped captions and subtitles, video and channel search, playlist contents, within-channel search and asynchronous bulk transcript jobs through the TranscriptOut service. Each skill ships with trigger vocabulary, exact API usage and error handling, so agents call the right endpoint on the first try. Sign up at transcriptout.com for an API key (100 free credits, no card, one-time). TranscriptOut is a third-party, independent service. It is not affiliated with, endorsed by, or sponsored by YouTube or Google.",
+    "developerName": "TranscriptOut",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Interactive"
+    ]
+  }
+}

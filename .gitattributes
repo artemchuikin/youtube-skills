@@ -1,0 +1,3 @@
+# linguist: the generator is tooling, not the content of this repo — keep it out of the
+# language bar so the repo does not present itself as a Python project.
+scripts/** linguist-vendored
