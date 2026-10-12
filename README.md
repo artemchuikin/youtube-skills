@@ -261,6 +261,10 @@ code off your inbox, and the key is stored for you. 100 free credits, no card.
 [transcriptout.com/docs](https://transcriptout.com/docs), and the same backend is available as a
 remote [MCP server](https://github.com/artemchuikin/youtube-mcp) if your client speaks MCP
 natively.
+For code outside an agent there are client libraries,
+[`pip install transcriptout`](https://github.com/artemchuikin/youtube-transcript-python) and
+[`npm i transcriptout`](https://github.com/artemchuikin/youtube-transcript-js), drop-in
+replacements for youtube-transcript-api and youtube-transcript.
 
 ### Live streams?
 
