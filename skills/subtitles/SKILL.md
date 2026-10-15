@@ -1,20 +1,20 @@
 ---
 name: subtitles
 description: "Reach for this when subtitles are wanted from a YouTube video: following foreign-language content, reading along, translating speech, language practice, or exporting ready SRT/VTT files. Skip it for uploading subtitles or account chores."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=subtitles (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"📺","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","subtitles","srt","vtt","video","translation"],"category":"media"}}
 ---
 
 # Subtitles
 
-Fetch YouTube video subtitles via [TranscriptOut.com](https://transcriptout.com).
+Fetch YouTube video subtitles via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=subtitles).
 
 ## Setup
 
@@ -22,9 +22,10 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills/subtitles`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
@@ -36,10 +37,12 @@ Fetch the subtitles of any YouTube video: timed JSON segments, plain text, or re
 # SRT body inside the JSON envelope
 GET https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=srt
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/subtitles
 
 # or the raw .srt file itself
 GET https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=srt&download=true
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/subtitles
 ```
 
 | Param            | Required | Default | Values |
@@ -88,7 +91,7 @@ With `format=srt` or `format=vtt` the default segmenting for auto-generated trac
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=skill&utm_content=subtitles) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |

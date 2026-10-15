@@ -54,7 +54,7 @@ Make a POST request to:
 POST https://api.transcriptout.com/auth/register-cli
 Content-Type: application/json
 
-{ "email": "the_user_email" }
+{ "email": "the_user_email", "source": "youtube-skills/youtube-playlist" }
 ```
 
 **Pipe the response into a temporary file and build the next request by reading the token out of
@@ -103,7 +103,7 @@ POST https://api.transcriptout.com/auth/verify-cli
 Authorization: Bearer <the access_token from Step B-2>
 Content-Type: application/json
 
-{ "otp": "123456" }
+{ "otp": "123456", "source": "youtube-skills/youtube-playlist" }
 ```
 
 Same discipline as before: **response into a file, key read out of the file**, because
@@ -148,9 +148,9 @@ key. Possession of the emailed code is the same proof the regular sign-in link r
 
 If the CLI endpoints answer `501`, or the user prefers doing it themselves:
 
-1. Send them to **https://transcriptout.com/login**, where they sign in with Google or a magic link.
+1. Send them to **https://transcriptout.com/login?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-playlist**, where they sign in with Google or a magic link.
    Signing in for the first time IS the signup and grants the free 100 credits.
-2. In the dashboard (**https://transcriptout.com/dashboard**) they create an API key. It starts
+2. In the dashboard (**https://transcriptout.com/dashboard?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-playlist**) they create an API key. It starts
    with `sk_` and is shown **once**. Ask them to paste it to you right away.
 
 ---
@@ -174,7 +174,8 @@ One free call confirms both the key and the balance (`/auth/*` endpoints never s
 
 ```bash
 curl -s https://api.transcriptout.com/auth/me \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-playlist"
 ```
 
 A valid key returns your `user_id` and remaining `credits`. A `401` means the key is wrong,

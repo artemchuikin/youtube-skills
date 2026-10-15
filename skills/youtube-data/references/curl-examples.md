@@ -8,7 +8,8 @@ Metadata for one video (title, channel, duration, views, thumbnails) plus the li
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/video?id=VIDEO_URL_OR_ID" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 ```
 
 **Credit hygiene:** if the transcript is wanted anyway, call `/v1/transcript` with `video_metadata=true` instead. One call and one credit against two.
@@ -19,7 +20,8 @@ Fetch the transcript of any YouTube video.
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.
@@ -67,15 +69,18 @@ Search YouTube for videos or channels.
 ```bash
 # Videos
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # Channels
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # Next page
 curl -s "https://api.transcriptout.com/v1/search?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 ```
 
 | Param             | Required | Default | Validation |
@@ -94,15 +99,18 @@ Every video from a channel's Videos tab, newest first.
 ```bash
 # First page (100 videos)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # Next pages
 curl -s "https://api.transcriptout.com/v1/channel/videos?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # IDs only, 500 per page (feed these into the bulk job)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 ```
 
 Provide `name` on the first call and only `next_page_token` afterwards. `limit` goes up to 100, or up to 500 with `ids_only=true` (the response is then `video_ids[]` instead of full video objects). The response carries `next_page_token` and `has_more`.
@@ -114,15 +122,18 @@ Every video of a playlist, in playlist order.
 ```bash
 # First page (100 videos)
 curl -s "https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # Next pages
 curl -s "https://api.transcriptout.com/v1/playlist/videos?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 
 # IDs only, 500 per page (feed these into the bulk job)
 curl -s "https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-data"
 ```
 
 `id` accepts a `PL...` playlist ID or any URL with `list=`. `limit` goes up to 100, or up to 500 with `ids_only=true`. The response carries `playlist`, `title`, `count`, `videos[]` (or `video_ids[]`), `next_page_token` and `has_more`.

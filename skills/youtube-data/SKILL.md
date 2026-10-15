@@ -1,20 +1,20 @@
 ---
 name: youtube-data
 description: "Reach for this when structured YouTube data is the goal: video metadata, transcripts for analysis, channel upload history, search results or playlist contents, with no Google Cloud project and no quota units. Triggers on YouTube links, creator names and topic research even when unstated. Skip it for uploads and text-only research."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-data (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"📊","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","data","metadata","api","channels","playlists"],"category":"media"}}
 ---
 
 # YouTube Data
 
-YouTube data access via [TranscriptOut.com](https://transcriptout.com): a lightweight alternative to Google's YouTube Data API.
+YouTube data access via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-data): a lightweight alternative to Google's YouTube Data API.
 
 ## Setup
 
@@ -22,15 +22,16 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills/youtube-data`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
 ## API Reference
 
-Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs).
+Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-data).
 
 ## GET /v1/video · 1 credit
 
@@ -39,6 +40,7 @@ Metadata for one video (title, channel, duration, views, thumbnails) plus the li
 ```http
 GET https://api.transcriptout.com/v1/video?id=VIDEO_URL_OR_ID
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 ```
 
 **Credit hygiene:** if the transcript is wanted anyway, call `/v1/transcript` with `video_metadata=true` instead. One call and one credit against two.
@@ -50,6 +52,7 @@ Fetch the transcript of any YouTube video.
 ```http
 GET https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.
@@ -98,14 +101,17 @@ Search YouTube for videos or channels.
 # Videos
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # Channels
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # Next page
 GET https://api.transcriptout.com/v1/search?next_page_token=TOKEN
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 ```
 
 | Param             | Required | Default | Validation |
@@ -125,14 +131,17 @@ Every video from a channel's Videos tab, newest first.
 # First page (100 videos)
 GET https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # Next pages
 GET https://api.transcriptout.com/v1/channel/videos?next_page_token=TOKEN
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # IDs only, 500 per page (feed these into the bulk job)
 GET https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown&ids_only=true
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 ```
 
 Provide `name` on the first call and only `next_page_token` afterwards. `limit` goes up to 100, or up to 500 with `ids_only=true` (the response is then `video_ids[]` instead of full video objects). The response carries `next_page_token` and `has_more`.
@@ -145,14 +154,17 @@ Every video of a playlist, in playlist order.
 # First page (100 videos)
 GET https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # Next pages
 GET https://api.transcriptout.com/v1/playlist/videos?next_page_token=TOKEN
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 
 # IDs only, 500 per page (feed these into the bulk job)
 GET https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL&ids_only=true
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-data
 ```
 
 `id` accepts a `PL...` playlist ID or any URL with `list=`. `limit` goes up to 100, or up to 500 with `ids_only=true`. The response carries `playlist`, `title`, `count`, `videos[]` (or `video_ids[]`), `next_page_token` and `has_more`.
@@ -180,7 +192,7 @@ Credits are refunded automatically when a call fails before reaching YouTube (va
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-data) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |

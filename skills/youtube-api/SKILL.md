@@ -1,20 +1,20 @@
 ---
 name: youtube-api
 description: "Reach for this when YouTube data is needed and Google's Data API is the obstacle: no quota units, no OAuth consent screens, one Bearer key. Covers transcripts (which Google's API does not serve at all), metadata, search, channels and playlists. Triggers on YouTube links, @handles and creator research. Skip it for uploads and account chores."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-api (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"🧰","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","api","rest","transcripts","search","no-quota"],"category":"media"}}
 ---
 
 # YouTube API
 
-YouTube API access via [TranscriptOut.com](https://transcriptout.com): no Google quota needed.
+YouTube API access via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-api): no Google quota needed.
 
 ## Setup
 
@@ -22,15 +22,16 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills/youtube-api`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
 ## API Reference
 
-Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs).
+Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-api).
 
 ## Endpoint Reference
 
@@ -54,18 +55,22 @@ Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest par
 # A transcript with metadata
 GET https://api.transcriptout.com/v1/transcript?video=dQw4w9WgXcQ&format=text&video_metadata=true
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-api
 
 # Search
 GET https://api.transcriptout.com/v1/search?q=rust+lifetimes&limit=10
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-api
 
 # A channel's uploads
 GET https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-api
 
 # A playlist
 GET https://api.transcriptout.com/v1/playlist/videos?id=PLAYLIST_URL
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-api
 ```
 
 ## Why Not Google's API?
@@ -81,7 +86,7 @@ Authorization: Bearer $TRANSCRIPTOUT_API_KEY
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-api) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |

@@ -8,7 +8,8 @@ Fetch the transcript of any YouTube video.
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/yt"
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.
@@ -56,15 +57,18 @@ Search YouTube for videos or channels.
 ```bash
 # Videos
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/yt"
 
 # Channels
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/yt"
 
 # Next page
 curl -s "https://api.transcriptout.com/v1/search?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/yt"
 ```
 
 | Param             | Required | Default | Validation |
@@ -82,7 +86,8 @@ The ~15 most recent videos of a channel, served from its RSS feed: the fastest a
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/latest?name=@kurzgesagt" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/yt"
 ```
 
 `name` accepts an `@handle`, a channel name, a `UC...` channel ID or a channel URL. No resolve step needed: pass the handle directly.

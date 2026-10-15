@@ -8,7 +8,8 @@ Fetch the transcript of any YouTube video.
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/transcript"
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.

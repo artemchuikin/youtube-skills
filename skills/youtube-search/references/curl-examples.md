@@ -9,15 +9,18 @@ Search YouTube for videos or channels.
 ```bash
 # Videos
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 
 # Channels
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 
 # Next page
 curl -s "https://api.transcriptout.com/v1/search?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 ```
 
 | Param             | Required | Default | Validation |
@@ -35,7 +38,8 @@ Search inside one channel using YouTube's native relevance search. A result whos
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/search?name=@kurzgesagt&q=QUERY&limit=30" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 ```
 
 | Param             | Required | Default | Validation |
@@ -54,9 +58,11 @@ Results are metadata only: choose from them, then transcribe just the chosen few
 ```bash
 # 1. Search
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&limit=5" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 
 # 2. Transcript of a chosen result
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&video_metadata=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-search"
 ```

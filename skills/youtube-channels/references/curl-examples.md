@@ -8,7 +8,8 @@ The ~15 most recent videos of a channel, served from its RSS feed: the fastest a
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/latest?name=@kurzgesagt" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 ```
 
 `name` accepts an `@handle`, a channel name, a `UC...` channel ID or a channel URL. No resolve step needed: pass the handle directly.
@@ -20,15 +21,18 @@ Every video from a channel's Videos tab, newest first.
 ```bash
 # First page (100 videos)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 
 # Next pages
 curl -s "https://api.transcriptout.com/v1/channel/videos?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 
 # IDs only, 500 per page (feed these into the bulk job)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 ```
 
 Provide `name` on the first call and only `next_page_token` afterwards. `limit` goes up to 100, or up to 500 with `ids_only=true` (the response is then `video_ids[]` instead of full video objects). The response carries `next_page_token` and `has_more`.
@@ -39,7 +43,8 @@ Search inside one channel using YouTube's native relevance search. A result whos
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/search?name=@kurzgesagt&q=QUERY&limit=30" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 ```
 
 | Param             | Required | Default | Validation |
@@ -58,9 +63,11 @@ Start with `channel/latest` when recent uploads are enough. `channel/videos` is 
 ```bash
 # Cheapest first: what did they post lately?
 curl -s "https://api.transcriptout.com/v1/channel/latest?name=@handle" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 
 # Whole catalogue as IDs when bulk work follows
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@handle&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/youtube-channels"
 ```

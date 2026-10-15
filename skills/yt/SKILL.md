@@ -1,20 +1,20 @@
 ---
 name: yt
 description: "Reach for this for quick YouTube lookups: a pasted link or video ID, a fast summary, what a channel posted lately, a topic search. Transcripts, search and channel-latest in one small skill. Skip it for uploads and account chores."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=yt (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"⚡","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","transcripts","search","quick","video"],"category":"media"}}
 ---
 
 # yt
 
-Quick YouTube lookup via [TranscriptOut.com](https://transcriptout.com).
+Quick YouTube lookup via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=yt).
 
 ## Setup
 
@@ -22,9 +22,10 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills/yt`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
@@ -35,6 +36,7 @@ Fetch the transcript of any YouTube video.
 ```http
 GET https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/yt
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.
@@ -83,14 +85,17 @@ Search YouTube for videos or channels.
 # Videos
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/yt
 
 # Channels
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/yt
 
 # Next page
 GET https://api.transcriptout.com/v1/search?next_page_token=TOKEN
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/yt
 ```
 
 | Param             | Required | Default | Validation |
@@ -109,6 +114,7 @@ The ~15 most recent videos of a channel, served from its RSS feed: the fastest a
 ```http
 GET https://api.transcriptout.com/v1/channel/latest?name=@kurzgesagt
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/yt
 ```
 
 `name` accepts an `@handle`, a channel name, a `UC...` channel ID or a channel URL. No resolve step needed: pass the handle directly.
@@ -119,7 +125,7 @@ Authorization: Bearer $TRANSCRIPTOUT_API_KEY
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=skill&utm_content=yt) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |

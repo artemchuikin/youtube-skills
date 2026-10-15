@@ -9,11 +9,13 @@ Fetch the closed captions of any YouTube video: timed JSON segments, plain text,
 ```bash
 # SRT body inside the JSON envelope
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=srt" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/captions"
 
 # or the raw .srt file itself
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=srt&download=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills/captions"
 ```
 
 | Param            | Required | Default | Values |

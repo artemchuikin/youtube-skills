@@ -1,20 +1,20 @@
 ---
 name: youtube-search
 description: "Reach for this when the user needs to FIND things on YouTube: videos or channels on a topic, creators covering a subject, tutorials, talks and reviews worth reading, or a channel looked up by name or handle. Also good proactively when researching a topic that video would cover well. Skip it for account chores and text-only research."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-search (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"🔍","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","search","video-search","channels","research","discovery"],"category":"media"}}
 ---
 
 # YouTube Search
 
-Search YouTube and fetch transcripts via [TranscriptOut.com](https://transcriptout.com).
+Search YouTube and fetch transcripts via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-search).
 
 ## Setup
 
@@ -22,15 +22,16 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills/youtube-search`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
 ## API Reference
 
-Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs).
+Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-search).
 
 ## GET /v1/search · 1 credit/page
 
@@ -40,14 +41,17 @@ Search YouTube for videos or channels.
 # Videos
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 
 # Channels
 GET https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 
 # Next page
 GET https://api.transcriptout.com/v1/search?next_page_token=TOKEN
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 ```
 
 | Param             | Required | Default | Validation |
@@ -66,6 +70,7 @@ Search inside one channel using YouTube's native relevance search. A result whos
 ```http
 GET https://api.transcriptout.com/v1/channel/search?name=@kurzgesagt&q=QUERY&limit=30
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 ```
 
 | Param             | Required | Default | Validation |
@@ -85,10 +90,12 @@ Results are metadata only: choose from them, then transcribe just the chosen few
 # 1. Search
 GET https://api.transcriptout.com/v1/search?q=QUERY&limit=5
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 
 # 2. Transcript of a chosen result
 GET https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&video_metadata=true
 Authorization: Bearer $TRANSCRIPTOUT_API_KEY
+X-Client: youtube-skills/youtube-search
 ```
 
 ## Errors
@@ -97,7 +104,7 @@ Authorization: Bearer $TRANSCRIPTOUT_API_KEY
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=skill&utm_content=youtube-search) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |

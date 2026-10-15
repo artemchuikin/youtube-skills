@@ -10,11 +10,30 @@ clawhub/ -> SKILL.md with ```bash blocks + references/auth-setup.md (examples ar
 """
 import json
 import os
+import re
 import shutil
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = "https://api.transcriptout.com/v1"
 KEY = "$TRANSCRIPTOUT_API_KEY"
+VERSION = "1.1.0"
+
+# Which skill and which registry made a call, sent as `X-Client` on every example request and as
+# `source` on the CLI sign-up, so TranscriptOut can tell where an account and its traffic came from.
+# Set per generated file by main(); the API keeps only [A-Za-z0-9._/@+-], so keep it a slug.
+CLIENT = "youtube-skills"
+
+# Every link to the site carries these tags, so a sign-up that starts from a skill is attributed
+# to it. `homepage` in the frontmatter metadata stays clean: registries show it as the project URL.
+UTM = "utm_source=youtube-skills"
+SITE_LINK = re.compile(r'https://transcriptout\.com(/[A-Za-z0-9/_-]*)?(?=[)\s*,.:]|$)')
+
+
+def tag_links(text, slug, medium):
+    """Add the UTM tags to every link to transcriptout.com: the registry flavour as utm_medium
+    (`skill` or `clawhub`), the skill as utm_content."""
+    tags = f"{UTM}&utm_medium={medium}&utm_content={slug}"
+    return SITE_LINK.sub(lambda m: f"https://transcriptout.com{m.group(1) or '/'}?{tags}", text)
 
 
 def req(lines, style):
@@ -33,6 +52,7 @@ def req(lines, style):
                 out.append(f"# {comment}")
             out.append(request)
             out.append(f"Authorization: Bearer {KEY}")
+            out.append(f"X-Client: {CLIENT}")
             if body:
                 out.append("Content-Type: application/json")
                 out.append("")
@@ -52,10 +72,12 @@ def req(lines, style):
             method, url = request.split(" ", 1)
             if method == "GET":
                 out.append(f'curl -s "{url}" \\')
-                out.append(f'  -H "Authorization: Bearer {KEY}"')
+                out.append(f'  -H "Authorization: Bearer {KEY}" \\')
+                out.append(f'  -H "X-Client: {CLIENT}"')
             else:
                 out.append(f'curl -s -X {method} "{url}" \\')
                 out.append(f'  -H "Authorization: Bearer {KEY}" \\')
+                out.append(f'  -H "X-Client: {CLIENT}" \\')
                 if body:
                     out.append('  -H "Content-Type: application/json" \\')
                     out.append(f"  -d '{body}'")
@@ -78,8 +100,9 @@ def sec_setup(style):
 def sec_headers(style):
     return (
         "## Required Header\n\n"
-        "Every request needs one header:\n\n"
-        f"- **Authorization:** `Bearer {KEY}`\n\n"
+        "Every request carries these headers:\n\n"
+        f"- **Authorization:** `Bearer {KEY}`\n"
+        f"- **X-Client:** `{CLIENT}`, so TranscriptOut knows the call came from this skill\n\n"
         "Every response is one JSON envelope. Success: `{\"ok\": true, \"request_id\": \"...\", "
         "\"data\": {...}}`. Error: `{\"ok\": false, \"code\": \"...\", \"detail\": \"...\", "
         "\"request_id\": \"...\"}`. Branch on the machine-readable `code`, not on the human text. "
@@ -664,7 +687,7 @@ Make a POST request to:
 POST https://api.transcriptout.com/auth/register-cli
 Content-Type: application/json
 
-{ "email": "the_user_email" }
+{ "email": "the_user_email", "source": "__CLIENT__" }
 ```
 
 **Pipe the response into a temporary file and build the next request by reading the token out of
@@ -713,7 +736,7 @@ POST https://api.transcriptout.com/auth/verify-cli
 Authorization: Bearer <the access_token from Step B-2>
 Content-Type: application/json
 
-{ "otp": "123456" }
+{ "otp": "123456", "source": "__CLIENT__" }
 ```
 
 Same discipline as before: **response into a file, key read out of the file**, because
@@ -784,7 +807,8 @@ One free call confirms both the key and the balance (`/auth/*` endpoints never s
 
 ```bash
 curl -s https://api.transcriptout.com/auth/me \\
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \\
+  -H "X-Client: __CLIENT__"
 ```
 
 A valid key returns your `user_id` and remaining `credits`. A `401` means the key is wrong,
@@ -840,7 +864,7 @@ def frontmatter(slug, d, claw):
         "---",
         f"name: {slug}",
         f'description: "{d["description"]}"',
-        'version: "1.0.0"',
+        f'version: "{VERSION}"',
         "user-invocable: true",
         "compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.",
         "required_environment_variables:",
@@ -887,17 +911,22 @@ def main():
         path = os.path.join(ROOT, sub)
         if os.path.isdir(path):
             shutil.rmtree(path)
+    global CLIENT
     for slug, d in SKILLS.items():
         for sub, style, claw in (("skills", "http", False), ("clawhub", "bash", True)):
+            CLIENT = f"youtube-skills-clawhub/{slug}" if claw else f"youtube-skills/{slug}"
             base = os.path.join(ROOT, sub, slug)
             os.makedirs(os.path.join(base, "references"), exist_ok=True)
-            with open(os.path.join(base, "SKILL.md"), "w") as f:
-                f.write(build_skill_md(slug, d, style, claw))
-            with open(os.path.join(base, "references", "auth-setup.md"), "w") as f:
-                f.write(AUTH_SETUP)
+
+            def emit(name, text):
+                with open(os.path.join(base, name), "w") as f:
+                    f.write(tag_links(text.replace("__CLIENT__", CLIENT), slug,
+                                      "clawhub" if claw else "skill"))
+
+            emit("SKILL.md", build_skill_md(slug, d, style, claw))
+            emit(os.path.join("references", "auth-setup.md"), AUTH_SETUP)
             if not claw:
-                with open(os.path.join(base, "references", "curl-examples.md"), "w") as f:
-                    f.write(build_curl_examples(slug, d))
+                emit(os.path.join("references", "curl-examples.md"), build_curl_examples(slug, d))
     print("generated", len(SKILLS), "skills into skills/ and clawhub/")
 
 

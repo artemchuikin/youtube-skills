@@ -1,20 +1,20 @@
 ---
 name: youtube-full
 description: "Reach for this whenever a task touches YouTube, whether or not the word appears: a pasted watch/shorts/channel/playlist link, a bare 11-char video ID or @handle, a creator to look up, a talk to summarize, quote or translate, research where lectures, tutorials and reviews beat written sources, or a product launch to catch on video. One skill for transcripts, video and channel search, channel browsing, in-channel search, playlists and 4,000-video batch jobs. Skip it for uploads, comments and account chores."
-version: "1.0.0"
+version: "1.1.0"
 user-invocable: true
 compatibility: Requires internet access to reach api.transcriptout.com. No additional runtimes or dependencies needed.
 required_environment_variables:
   - name: TRANSCRIPTOUT_API_KEY
     prompt: Your TranscriptOut API key (starts with sk_)
-    help: Free account at https://transcriptout.com (100 credits on signup, no card). Create the key in the dashboard.
+    help: Free account at https://transcriptout.com/?utm_source=youtube-skills&utm_medium=clawhub&utm_content=youtube-full (100 credits on signup, no card). Create the key in the dashboard.
     required_for: all API requests
 metadata: {"openclaw":{"emoji":"🎯","requires":{"env":["TRANSCRIPTOUT_API_KEY"]},"primaryEnv":"TRANSCRIPTOUT_API_KEY","homepage":"https://transcriptout.com"},"hermes":{"tags":["youtube","transcripts","video","search","channels","playlists","captions"],"category":"media"}}
 ---
 
 # YouTube Full
 
-Complete YouTube toolkit via [TranscriptOut.com](https://transcriptout.com). Everything in one skill.
+Complete YouTube toolkit via [TranscriptOut.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=clawhub&utm_content=youtube-full). Everything in one skill.
 
 ## Setup
 
@@ -22,15 +22,16 @@ If `$TRANSCRIPTOUT_API_KEY` is not set, read [references/auth-setup.md](referenc
 
 ## Required Header
 
-Every request needs one header:
+Every request carries these headers:
 
 - **Authorization:** `Bearer $TRANSCRIPTOUT_API_KEY`
+- **X-Client:** `youtube-skills-clawhub/youtube-full`, so TranscriptOut knows the call came from this skill
 
 Every response is one JSON envelope. Success: `{"ok": true, "request_id": "...", "data": {...}}`. Error: `{"ok": false, "code": "...", "detail": "...", "request_id": "..."}`. Branch on the machine-readable `code`, not on the human text. The remaining credit balance rides in the `X-Credits-Remaining` response header.
 
 ## API Reference
 
-Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs).
+Base URL: `https://api.transcriptout.com/v1`. Full reference with the latest parameters and schemas: [transcriptout.com/docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=clawhub&utm_content=youtube-full).
 
 ## Transcript · 1 credit
 
@@ -38,7 +39,8 @@ Fetch the transcript of any YouTube video.
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_URL_OR_ID&format=text" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 Accepts full URLs (`youtube.com/watch?v=ID`), short URLs (`youtu.be/ID`), shorts (`youtube.com/shorts/ID`), or bare video IDs.
@@ -85,7 +87,8 @@ Metadata for one video (title, channel, duration, views, thumbnails) plus the li
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/video?id=VIDEO_URL_OR_ID" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 **Credit hygiene:** if the transcript is wanted anyway, call `/v1/transcript` with `video_metadata=true` instead. One call and one credit against two.
@@ -97,15 +100,18 @@ Search YouTube for videos or channels.
 ```bash
 # Videos
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=video&limit=20" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Channels
 curl -s "https://api.transcriptout.com/v1/search?q=QUERY&type=channel&limit=10" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Next page
 curl -s "https://api.transcriptout.com/v1/search?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 | Param             | Required | Default | Validation |
@@ -123,7 +129,8 @@ The ~15 most recent videos of a channel, served from its RSS feed: the fastest a
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/latest?name=@kurzgesagt" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 `name` accepts an `@handle`, a channel name, a `UC...` channel ID or a channel URL. No resolve step needed: pass the handle directly.
@@ -135,15 +142,18 @@ Every video from a channel's Videos tab, newest first.
 ```bash
 # First page (100 videos)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Next pages
 curl -s "https://api.transcriptout.com/v1/channel/videos?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # IDs only, 500 per page (feed these into the bulk job)
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@3blue1brown&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 Provide `name` on the first call and only `next_page_token` afterwards. `limit` goes up to 100, or up to 500 with `ids_only=true` (the response is then `video_ids[]` instead of full video objects). The response carries `next_page_token` and `has_more`.
@@ -154,7 +164,8 @@ Search inside one channel using YouTube's native relevance search. A result whos
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/channel/search?name=@kurzgesagt&q=QUERY&limit=30" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 | Param             | Required | Default | Validation |
@@ -173,15 +184,18 @@ Every video of a playlist, in playlist order.
 ```bash
 # First page (100 videos)
 curl -s "https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Next pages
 curl -s "https://api.transcriptout.com/v1/playlist/videos?next_page_token=TOKEN" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # IDs only, 500 per page (feed these into the bulk job)
 curl -s "https://api.transcriptout.com/v1/playlist/videos?id=PL_ID_OR_URL&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 `id` accepts a `PL...` playlist ID or any URL with `list=`. `limit` goes up to 100, or up to 500 with `ids_only=true`. The response carries `playlist`, `title`, `count`, `videos[]` (or `video_ids[]`), `next_page_token` and `has_more`.
@@ -192,7 +206,8 @@ Find videos inside a playlist by a substring of the title (case-insensitive). Yo
 
 ```bash
 curl -s "https://api.transcriptout.com/v1/playlist/search?id=PL_ID_OR_URL&q=QUERY&limit=30" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 `truncated: true` in the response means the scan window ended before the playlist did, so there may be more matches.
@@ -205,6 +220,7 @@ One asynchronous job for up to 4,000 videos. Use it instead of looping over `/v1
 # Submit. Charged 1 credit per unique video, returns 202 immediately
 curl -s -X POST "https://api.transcriptout.com/v1/transcripts" \
   -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full" \
   -H "Content-Type: application/json" \
   -d '{"videos":["VIDEO_ID_1","VIDEO_ID_2"],"lang":"en","format":"text"}'
 ```
@@ -214,15 +230,18 @@ The `202` response carries `job_id`, `status`, `count` and `credits: {charged, r
 ```bash
 # Progress (free)
 curl -s "https://api.transcriptout.com/v1/transcripts/JOB_ID" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Results, readable before the job is done (free)
 curl -s "https://api.transcriptout.com/v1/transcripts/JOB_ID/results?limit=100" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # Cancel. Refunds only videos not started yet (free)
 curl -s -X POST "https://api.transcriptout.com/v1/transcripts/JOB_ID/cancel" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 Requires a user key (`sk_...`). Results come in submission order, page by page (`limit` 1-500, `next_page_token`). Each entry is exactly what `/v1/transcript` returns for that video, plus its status. Videos that could not be delivered through the service's fault are refunded automatically.
@@ -250,7 +269,7 @@ Credits are refunded automatically when a call fails before reaching YouTube (va
 | ---- | ------- | ------ |
 | 400/422 | Bad parameter | Fix the request. Credit refunded automatically |
 | 401 | Bad or missing API key | Check the key. It must start with `sk_` |
-| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing) |
+| 402 | Out of credits | [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=clawhub&utm_content=youtube-full) |
 | 404 | No captions on that language/track, or bad ID | Definitive answer, do not retry. Try another `lang` or `kind=auto`. Billed |
 | 410 | Video removed | Do not retry |
 | 451 | Age-restricted or members-only | Do not retry |
@@ -276,11 +295,13 @@ Every error body carries a machine-readable `code` and a `request_id`. Include t
 ```bash
 # 1. Search
 curl -s "https://api.transcriptout.com/v1/search?q=rust+async+explained&limit=5" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # 2. Transcript of the best hit
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&video_metadata=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 **Channel monitoring:** latest, then transcript.
@@ -288,11 +309,13 @@ curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&
 ```bash
 # 1. Latest uploads (pass the @handle directly)
 curl -s "https://api.transcriptout.com/v1/channel/latest?name=@kurzgesagt" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # 2. Transcript of the newest
 curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&video_metadata=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 **Bulk export:** list IDs, submit one job, read pages.
@@ -300,17 +323,20 @@ curl -s "https://api.transcriptout.com/v1/transcript?video=VIDEO_ID&format=text&
 ```bash
 # 1. Collect IDs, 500 per page
 curl -s "https://api.transcriptout.com/v1/channel/videos?name=@fireship&ids_only=true" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 
 # 2. One job for all of them
 curl -s -X POST "https://api.transcriptout.com/v1/transcripts" \
   -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full" \
   -H "Content-Type: application/json" \
   -d '{"videos":["ID1","ID2","..."],"format":"text"}'
 
 # 3. Read as they land
 curl -s "https://api.transcriptout.com/v1/transcripts/JOB_ID/results" \
-  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY"
+  -H "Authorization: Bearer $TRANSCRIPTOUT_API_KEY" \
+  -H "X-Client: youtube-skills-clawhub/youtube-full"
 ```
 
 Free tier: 100 credits on signup, 200 req/min. Starter ($4.49/mo): 1,000 credits/month, slider up to 100,000/month. Failed calls that never reached YouTube are refunded.

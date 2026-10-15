@@ -12,7 +12,7 @@ headless browser, no Google Cloud project. One HTTPS request per answer.
 Works with Claude Code, Cursor, Antigravity, Cline, Codex, OpenClaw, Hermes Agent, and anything
 else that reads the Agent Skills format.
 
-Made by [TranscriptOut](https://transcriptout.com) · [API docs](https://transcriptout.com/docs) · [MCP server](https://github.com/artemchuikin/youtube-mcp)
+Made by [TranscriptOut](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=readme) · [API docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=readme) · [MCP server](https://github.com/artemchuikin/youtube-mcp)
 
 ---
 
@@ -170,7 +170,7 @@ really happened. The rate limit is 200 requests per minute per key on every plan
 | **Scale** | slider up to $198.99/mo | up to 100,000/month |
 
 Subscription volume is a slider from 1,000 to 100,000 credits per month in steps of 1,000, and the
-per-1,000 rate falls as the volume grows. [Full pricing →](https://transcriptout.com/#pricing)
+per-1,000 rate falls as the volume grows. [Full pricing →](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=readme#pricing)
 
 ---
 
@@ -197,9 +197,9 @@ straight into an embedding pipeline with no re-chunking step.
 
 The in-chat flow above is optional. The manual way takes two minutes.
 
-1. Sign in at [transcriptout.com](https://transcriptout.com) with Google or a magic link. The
+1. Sign in at [transcriptout.com](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=readme) with Google or a magic link. The
    first sign-in is the signup and grants the free credits.
-2. Create an API key in the [dashboard](https://transcriptout.com/dashboard). It starts with `sk_`
+2. Create an API key in the [dashboard](https://transcriptout.com/dashboard?utm_source=youtube-skills&utm_medium=readme). It starts with `sk_`
    and is shown once.
 3. Export it where the agent can see it.
 
@@ -257,8 +257,8 @@ code off your inbox, and the key is stored for you. 100 free credits, no card.
 
 ### What API is underneath?
 
-[TranscriptOut](https://transcriptout.com), a hosted YouTube data API. The full reference lives at
-[transcriptout.com/docs](https://transcriptout.com/docs), and the same backend is available as a
+[TranscriptOut](https://transcriptout.com/?utm_source=youtube-skills&utm_medium=readme), a hosted YouTube data API. The full reference lives at
+[transcriptout.com/docs](https://transcriptout.com/docs?utm_source=youtube-skills&utm_medium=readme), and the same backend is available as a
 remote [MCP server](https://github.com/artemchuikin/youtube-mcp) if your client speaks MCP
 natively.
 For code outside an agent there are client libraries,
@@ -280,7 +280,7 @@ relay them word for word, so this table is keyed by what you will actually see.
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
 | `401 Unauthorized` | Key missing, mistyped, or not loaded into the environment | Confirm `TRANSCRIPTOUT_API_KEY` is set in the shell the agent runs in and starts with `sk_` |
-| `402 Payment Required` | The account is out of credits | Check the balance at [transcriptout.com/billing](https://transcriptout.com/billing) |
+| `402 Payment Required` | The account is out of credits | Check the balance at [transcriptout.com/billing](https://transcriptout.com/billing?utm_source=youtube-skills&utm_medium=readme) |
 | `404 Not Found` | No captions on the requested language or track, or a wrong ID | A definitive answer, retrying won't change it. Try another `lang`, or `kind=auto` |
 | `410 Gone` | The video was removed | Nothing to fetch |
 | `451` | Age-restricted or members-only video | Nothing to fetch without an account, which the API deliberately does not use |
