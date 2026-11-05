@@ -201,31 +201,34 @@ The in-chat flow above is optional. The manual way takes two minutes.
    first sign-in is the signup and grants the free credits.
 2. Create an API key in the [dashboard](https://transcriptout.com/dashboard?utm_source=youtube-skills&utm_medium=readme). It starts with `sk_`
    and is shown once.
-3. Export it where the agent can see it.
+3. Store it where the agent can read it, without pasting it into the chat. If your runtime asks
+   for `TRANSCRIPTOUT_API_KEY` itself (Hermes, OpenClaw), enter it there. Otherwise run this in
+   your own terminal: it reads the key without echoing it into a file only you can read.
 
 ```bash
-export TRANSCRIPTOUT_API_KEY="sk_your_key_here"
+mkdir -p ~/.config/transcriptout && chmod 700 ~/.config/transcriptout && (umask 077; printf 'TranscriptOut key: '; stty -echo; IFS= read -r k; stty echo; echo; printf '%s' "$k" > ~/.config/transcriptout/key)
 ```
 
-Or hand it to the agent and let it persist the value.
+4. Load it in every shell. Add this line to your shell profile. It holds a path, not the key:
 
-> "My TranscriptOut key is `sk_...`, store it so it persists across sessions."
+```bash
+export TRANSCRIPTOUT_API_KEY="$(cat ~/.config/transcriptout/key 2>/dev/null)"
+```
 
 <details>
 <summary><strong>Where does the key get saved?</strong></summary>
 
-The storage location depends on which runtime the agent lives in.
-
 | Location | File |
 |----------|------|
-| **OpenClaw/Moltbot** | `~/.openclaw/openclaw.json` or `~/.clawdbot/moltbot.json` |
+| **OpenClaw/Moltbot** | the runtime's own config, via its prompt for `TRANSCRIPTOUT_API_KEY` |
 | **Hermes Agent** | Hermes secret store (`TRANSCRIPTOUT_API_KEY` declared via `required_environment_variables` in skill frontmatter) |
-| **macOS shell** | `~/.zshenv`, `~/.zprofile` |
-| **Linux shell** | `~/.profile`, `~/.bashrc`, `~/.zshenv` |
-| **Fish shell** | `~/.config/fish/config.fish` |
-| **Fallback** | `~/.transcriptout` (mode 600) |
+| **Everything else** | `~/.config/transcriptout/key` (folder mode 700, file mode 600), loaded by one line in the shell profile |
 
-The agent picks it up automatically after saving.
+The key itself never goes into a shell profile, a project directory or the chat, and the skills
+never print it. If you pasted it into a chat anyway, create a fresh key in the dashboard and delete
+the old one.
+
+</details>
 
 </details>
 
