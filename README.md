@@ -18,8 +18,16 @@ Made by [TranscriptOut](https://transcriptout.com/?utm_source=youtube-skills&utm
 
 ## ⚡ Quick start
 
+Claude Code, Cursor, Codex, Cline, Antigravity:
+
 ```bash
 npx skills add artemchuikin/youtube-skills --skill youtube-full
+```
+
+OpenClaw:
+
+```bash
+npx clawhub@latest install @artemchuikin/youtube-full
 ```
 
 Then ask the agent something it previously had to refuse.
@@ -55,8 +63,18 @@ git clone https://github.com/artemchuikin/youtube-skills.git
 cp -r youtube-skills/skills/youtube-full ~/.claude/skills/
 ```
 
-**OpenClaw (ClawdBot/Moltbot).** Copy a folder from `clawhub/` into your skills directory. The
-`clawhub/` tree carries the same 12 skills with bash-style examples.
+**OpenClaw (ClawdBot/Moltbot)**
+
+All 12 skills are on [ClawHub](https://clawhub.ai/artemchuikin). Install any of them by its full
+name, with the `@artemchuikin/` prefix, since some short names are taken on ClawHub by other skills.
+
+```bash
+npx clawhub@latest install @artemchuikin/youtube-full
+npx clawhub@latest install @artemchuikin/transcript
+```
+
+Without the ClawHub CLI, copy a folder from `clawhub/` into your skills directory. The `clawhub/`
+tree carries the same 12 skills with bash-style examples.
 
 **No terminal at all.** Paste this into the agent and let it do the work.
 
