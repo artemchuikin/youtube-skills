@@ -79,17 +79,28 @@ Both secrets this produces, the sign-up token and the key, go straight from the 
 private file and are never printed. Shell variables do not survive between tool calls in many
 runtimes, so the token waits in a file for the second step and is deleted after it.
 
-### Step B-1: Ask for their email
+### Step B-1: Ask for their email, and where they found this skill
 
-Ask the user for the email address they want to use.
+In one message, ask the user for the email address they want to use, and ask this question word
+for word:
+
+> Where did you find this skill? For example a post, a directory, a friend, or an AI assistant. (optional)
+
+The second answer is optional. If they skip it, go on without it and do not ask again.
 
 ### Step B-2: Register
 
-Run this as one command, with the user's address in place of `USER_EMAIL`:
+Run this as one command, with the user's address in place of `USER_EMAIL` and their answer to the
+second question in place of `HEARD_FROM`:
 
 ```bash
-mkdir -p ~/.config/transcriptout && chmod 700 ~/.config/transcriptout && (umask 077; curl -s -X POST https://api.transcriptout.com/auth/register-cli -H "Content-Type: application/json" -H "X-Client: youtube-skills-clawhub/youtube-data" -d '{"email":"USER_EMAIL","source":"youtube-skills-clawhub/youtube-data"}' -o ~/.config/transcriptout/signup.json); grep -o '"ok":[a-z]*\|"code":"[^"]*"' ~/.config/transcriptout/signup.json
+mkdir -p ~/.config/transcriptout && chmod 700 ~/.config/transcriptout && (umask 077; curl -s -X POST https://api.transcriptout.com/auth/register-cli -H "Content-Type: application/json" -H "X-Client: youtube-skills-clawhub/youtube-data" -d '{"email":"USER_EMAIL","source":"youtube-skills-clawhub/youtube-data","heard_from":"HEARD_FROM"}' -o ~/.config/transcriptout/signup.json); grep -o '"ok":[a-z]*\|"code":"[^"]*"' ~/.config/transcriptout/signup.json
 ```
+
+Before you put the answer in place of `HEARD_FROM`, keep only letters, digits, spaces and the
+characters `. , - / : @`, drop everything else, and cut it to 200 characters. That keeps the
+command and the JSON intact whatever the user typed. If they skipped the question, leave
+`HEARD_FROM` as an empty string.
 
 It prints only `"ok":true`, or `"ok":false` with an error `code`. The response itself holds
 `data.access_token`, a short-lived token for the next step, and stays in the file.
